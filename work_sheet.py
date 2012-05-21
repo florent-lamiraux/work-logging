@@ -185,6 +185,10 @@ class WorkSheet (object) :
     def extractMonth(self, year, month) :
         """
         Extract activities starting a given month
+
+          Input:
+            - year:  integer
+            - month: integer between 1 and 12.
         """
         init = dt.datetime(year = year, month = month, day=1)
         if month < 12:
