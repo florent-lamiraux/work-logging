@@ -42,6 +42,10 @@ class Activity (object):
     """
     The list of tags this activity is related to
     """
+    partition = set ([])
+    """
+    A set of tags that realizes a partitions of all activities
+    """
     startTime = None
     """
     Starting time of the activity: a datetime.datetime object
@@ -56,6 +60,12 @@ class Activity (object):
     """
     Number of members written in file for each activity
     """
+    @staticmethod
+    def readPartition (filename):
+        with open (filename, 'r') as f:
+            for line in f:
+                Activity.partition.add (line.strip('\n'))
+
     @staticmethod
     def listToDatetime (strDateAndTime) :
         if strDateAndTime == 'None':

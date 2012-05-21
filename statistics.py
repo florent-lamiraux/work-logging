@@ -40,9 +40,11 @@ def displayStatistics(w):
     """
     total = w.totalTime
     print ("Total time: %f" % total)
-    for tag in Activity.tags:
-        t = w.extractInter([tag]).totalTime
-        print ("  %s:\t %f \t%f" % (tag, t, t/total*100) + '%')
+    for p in Activity.partition:
+		t = w.extractUnion([p,]).totalTime
+                line = "  " + p + ":" + (30 - len (p))*" " + "\t" + "%.2f"%t +\
+                    "\t" + "%.2f"%(t/total*100) + "%"
+		print (line)
 
 if __name__ == '__main__':
     w = readFile()

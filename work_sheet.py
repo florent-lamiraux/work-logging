@@ -32,6 +32,7 @@ import csv
 import datetime as dt
 from activity import Activity, TagError
 filename = os.getenv('HOME')+"/.activity"
+partition = os.getenv('HOME')+"/.activity-partition"
 
 class CsvDialectComma (csv.Dialect) :
     def __init__(self):
@@ -64,6 +65,9 @@ class WorkSheet (object) :
         if not isinstance(activity, Activity) :
             raise TypeError("expecting an object of type Activity: got %s"%
                             repr(activity))
+        if len (activity.instanceTags.intersection (Activity.partition)) != 1:
+            raise RuntimeError ("activity should contain one and only one " +
+                                "element of partition.")
         self.activities.append(activity)
 
     def write(self, filename) :
@@ -212,6 +216,8 @@ def readFile() :
     Read $HOME/.activity file and return the correponding work sheet
     """
     global filename
+    global partition
+    Activity.readPartition (partition)
     w = WorkSheet()
     w.read(filename)
     return w
