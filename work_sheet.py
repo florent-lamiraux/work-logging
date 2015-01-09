@@ -216,6 +216,13 @@ class WorkSheet (object) :
             result[t] = self.extractInter(set([t])).totalTime
         return result
 
+    def check (self):
+        for a1, a2 in zip (self.activities, self.activities [1:]):
+            if (a1.endTime > a2.startTime or
+                a1.duration < dt.timedelta(0,0) or
+                a1.duration > dt.timedelta(1, 0)):
+                print ("{0}:\t {1}".format (a1.startTime, a1.description))
+
 def readFile() :
     """
     Read $HOME/.activity file and return the correponding work sheet
