@@ -41,10 +41,13 @@ def displayStatistics(w):
     total = w.totalTime
     print ("Total time: %f" % total)
     for p in Activity.partition:
-		t = w.extractUnion([p,]).totalTime
-                line = "  " + p + ":" + (30 - len (p))*" " + "\t" + "%.2f"%t +\
-                    "\t" + "%.2f"%(t/total*100) + "%"
-		print (line)
+        try:
+            t = w.extractUnion([p,]).totalTime
+            line = "  " + p + ":" + (30 - len (p))*" " + "\t" + "%.2f"%t +\
+                "\t" + "%.2f"%(t/total*100) + "%"
+            print (line)
+        except:
+            pass
 
 if __name__ == '__main__':
     w = readFile()
