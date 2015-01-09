@@ -97,6 +97,11 @@ class WorkSheet (object) :
     def sort(self) :
         self.activities.sort()
         
+    def __add__ (self, other):
+        res = WorkSheet ()
+        res.activities = self.activities + other.activities
+        return res
+
     def __str__(self) :
         string = ""
         for a in self.activities :
