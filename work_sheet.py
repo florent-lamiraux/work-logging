@@ -27,12 +27,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import sys, os, time
+import sys, time
 import csv
 import datetime as dt
 from activity import Activity, TagError
-filename = os.getenv('HOME')+"/.activity"
-partition = os.getenv('HOME')+"/.activity-partition"
 
 class CsvDialectComma (csv.Dialect) :
     def __init__(self):
@@ -223,12 +221,10 @@ class WorkSheet (object) :
                 a1.duration > dt.timedelta(1, 0)):
                 print ("{0}:\t {1}".format (a1.startTime, a1.description))
 
-def readFile() :
+def readFile (filename, partition) :
     """
     Read $HOME/.activity file and return the correponding work sheet
     """
-    global filename
-    global partition
     Activity.readPartition (partition)
     w = WorkSheet()
     w.read(filename)

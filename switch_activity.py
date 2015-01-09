@@ -27,14 +27,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import sys, time
+import sys, os, time
 import datetime as dt
-from work_sheet import WorkSheet, readFile, filename
+from work_sheet import WorkSheet, readFile
 from activity import Activity, TagError
+
+filename = os.getenv('HOME')+"/.activity"
+partition = os.getenv('HOME')+"/.activity-partition"
 
 if __name__ == '__main__':
     now = dt.datetime.now()
-    w = readFile()
+    w = readFile (filename, partition)
     if len(w) == 0:
         raise RuntimeError(".activity file is empty.")
     aOld = w[-1]

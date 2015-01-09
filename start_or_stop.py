@@ -27,13 +27,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import sys, time
+import sys, os, time
 import datetime as dt
-from work_sheet import WorkSheet, readFile, filename
+from work_sheet import WorkSheet, readFile
 from activity import Activity, TagError
 
+filename = os.getenv('HOME')+"/.activity"
+partition = os.getenv('HOME')+"/.activity-partition"
+
 if __name__ == '__main__':
-    w = readFile()
+    w = readFile (filename, partition)
     if len(w) > 0 and w[-1].endTime == None :
         a = w[-1]
         a.endTime = dt.datetime.now()
