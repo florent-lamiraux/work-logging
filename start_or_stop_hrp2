@@ -35,6 +35,7 @@ filename = '/usr/local/etc/robot_time/hrp2-activity'
 partition = '/usr/local/etc/robot_time/hrp2-partition'
 
 if __name__ == '__main__':
+    user = os.getenv ('USER')
     w = readFile (filename, partition)
     if len(w) > 0 and w[-1].endTime == None :
         a = w[-1]
@@ -61,5 +62,7 @@ if __name__ == '__main__':
                     a.addNewTag(tag)
             print "Do you want to add a tag ? (y/n) "
         w.add(a)
+        # Add user as a tag
+        if user: w.add (user)
     w.write(filename)
     time.sleep(2.)
