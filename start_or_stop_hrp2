@@ -61,8 +61,12 @@ if __name__ == '__main__':
                 if sys.stdin.readline() == 'y\n':
                     a.addNewTag(tag)
             print "Do you want to add a tag ? (y/n) "
-        w.add(a)
         # Add user as a tag
-        if user: w.add (user)
+        if user:
+            try:
+                a.addTag (user)
+            except TagError:
+                a.addNewTag (user)
+        w.add(a)
     w.write(filename)
     time.sleep(2.)
