@@ -65,7 +65,7 @@ INSTALL (FILES
   DESTINATION ${PYTHON_SITELIB}/robot_time
   )
 
-INSTALL (FILES
-  start_or_stop_hrp2.py
+INSTALL (PROGRAMS
+  start_or_stop_hrp2
   DESTINATION ${CMAKE_INSTALL_BINDIR}
   )
