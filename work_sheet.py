@@ -230,15 +230,15 @@ def readFile (filename, partition) :
     w.read(filename)
     return w
 
-def workToday() :
-    w = readFile()
+def workToday(filename, partition) :
+    w = readFile(filename, partition)
     now = dt.datetime.now()
     if w[-1].endTime is None:
         w[-1].endTime = now
     return w.extractDay(year = now.year, month = now.month, day = now.day)
 
-def workThisWeek() :
-    w = readFile()
+def workThisWeek(filename, partition) :
+    w = readFile(filename, partition)
     now = dt.datetime.now()
     if w[-1].endTime is None:
         w[-1].endTime = now
@@ -249,8 +249,8 @@ def workThisWeek() :
     mondayMorning = thisMorning + dt.timedelta(days=-now.weekday())
     return w.extractBetween(mondayMorning, now)
 
-def workThisMonth() :
-    w = readFile()
+def workThisMonth(filename, partition) :
+    w = readFile(filename, partition)
     now = dt.datetime.now()
     if w[-1].endTime is None:
         w[-1].endTime = now
