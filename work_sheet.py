@@ -63,9 +63,8 @@ class WorkSheet (object) :
         if not isinstance(activity, Activity) :
             raise TypeError("expecting an object of type Activity: got %s"%
                             repr(activity))
-        if len (activity.instanceTags.intersection (Activity.partition)) != 1:
-            raise RuntimeError ("activity should contain one and only one " +
-                                "element of partition.")
+        if activity.project not in Activity.partition:
+            raise RuntimeError ("Project should belong to list of projects")
         self.activities.append(activity)
 
     def write(self, filename) :
@@ -111,48 +110,6 @@ class WorkSheet (object) :
     
     def __len__(self) :
         return len(self.activities)
-
-    def checkTags(self, tagSet) :
-        """
-        Check that given set of tags is included in class set
-        """
-        if not isinstance(tagSet, set):
-            raise TagError("%s is not a set." % tagSet)
-        for tag in tagSet :
-            if tag not in Activity.tags:
-                raise TagError("'%s' is not a known tag." % tag)
-
-    def extractUnion(self, tags) :
-        """
-        Extract activities related to given set of tags.
-        
-          Return a work sheet containing the selected activities
-          """
-        tagSet = set(tags)
-        self.checkTags(tagSet)
-        w = WorkSheet()
-        w.activities = filter(lambda x : 
-                              not tagSet.isdisjoint(x.instanceTags) and
-                              not x.endTime is None,
-                              self.activities)
-        return w
-
-    def extractInter(self, tags) :
-        """
-        Extract activities related to all tags in a given set.
-
-          Return a work sheet containing the selected activities.
-        """
-        tagSet = set(tags)
-        self.checkTags(tagSet)
-        self.checkTags(tagSet)
-        w = WorkSheet()
-        w.activities = filter(lambda x :
-                                  tagSet.issubset(x.instanceTags) and
-                              not x.endTime is None,
-                              self.activities)
-        return w
-
 
     @property
     def totalTime(self):
@@ -204,22 +161,6 @@ class WorkSheet (object) :
             end = dt.datetime(year = year+1, month = 1, day=1)
         predicate = lambda x: init <= x.startTime <= end
         return self.extract(predicate)
-
-    def totalTimeByTag(self):
-        result = {}
-        tags = set()
-        for a in self.activities:
-            tags = tags.union(a.instanceTags)
-        for t in tags:
-            result[t] = self.extractInter(set([t])).totalTime
-        return result
-
-    def check (self):
-        for a1, a2 in zip (self.activities, self.activities [1:]):
-            if (a1.endTime > a2.startTime or
-                a1.duration < dt.timedelta(0,0) or
-                a1.duration > dt.timedelta(1, 0)):
-                print ("{0}:\t {1}".format (a1.startTime, a1.description))
 
 def readFile (filename, partition) :
     """

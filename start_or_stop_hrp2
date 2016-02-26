@@ -35,7 +35,6 @@ filename = '/usr/local/etc/robot_time/hrp2-activity'
 partition = '/usr/local/etc/robot_time/hrp2-partition'
 
 if __name__ == '__main__':
-    user = os.getenv ('USER')
     w = readFile (filename, partition)
     if len(w) > 0 and w[-1].endTime == None :
         a = w[-1]
@@ -48,25 +47,12 @@ if __name__ == '__main__':
                 print a
         print "Starting new activity."
         a = Activity()
+        print "Please write main user:"
+        a.user = sys.stdin.readline()[:-1]
         print "Please write description:"
         a.description = sys.stdin.readline()[:-1]
-        tagInput = True
-        print "Do you want to add a tag ? (y/n) "
-        while sys.stdin.readline() == 'y\n':
-            tag = sys.stdin.readline()[:-1]
-            try :
-                a.addTag(tag)
-            except TagError as exc:
-                print "This tag is new. Confirm ? (y/n)"
-                if sys.stdin.readline() == 'y\n':
-                    a.addNewTag(tag)
-            print "Do you want to add a tag ? (y/n) "
-        # Add user as a tag
-        if user:
-            try:
-                a.addTag (user)
-            except TagError:
-                a.addNewTag (user)
+        print "Please write project"
+        a.project = sys.stdin.readline()[:-1]
         w.add(a)
     w.write(filename)
     time.sleep(2.)

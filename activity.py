@@ -34,12 +34,6 @@ class TagError (BaseException) :
 
 class Activity (object):
     """
-    Atomic activity with a time and a list of tags that will enable users to
-    sum up the time spent for given tags.
-    An activity is included in a unique day
-    """
-    tags = set([])
-    """
     The list of tags this activity is related to
     """
     partition = set ([])
@@ -55,8 +49,10 @@ class Activity (object):
     Ending time of the activity
     """
     description = ""
+    user = None
+    project = None
 
-    nbMembers = 4
+    nbMembers = 5
     """
     Number of members written in file for each activity
     """
@@ -94,14 +90,14 @@ class Activity (object):
         startTime = Activity.listToDatetime (l[0])
         endTime = Activity.listToDatetime (l[1])
         description = l[2]
-        instanceTags = l[3].split('" "')
-        instanceTags = map(lambda s : s.strip('"'), instanceTags)
+        user = l[3]
+        project = l[4]
         a = Activity()
         a.startTime = startTime
         a.endTime = endTime
         a.description = description
-        for t in instanceTags:
-            a.addNewTag(t)
+        a.user = user
+        a.project = project
         return a
 
     def __init__(self) :
@@ -109,29 +105,10 @@ class Activity (object):
         Initialize starting time with current time
         """
         self.startTime = dt.datetime.now()
-        self.instanceTags = set()
         
-    def addTag(self, tag) :
-        """
-        Add a tag for this activity
-
-          Tag must already be referenced in class set.
-        """
-        if tag not in Activity.tags :
-            raise TagError\
-                ("tag %s is unknown. Use addNewTag method for new tags"%tag)
-        self.instanceTags.add (tag)
-        
-    def addNewTag(self, tag) :
-        self.instanceTags.add (tag)
-        Activity.tags.add(tag)
-
     def __str__(self) :
-        string = "%s;%s;%s;"% (str(self.startTime), str(self.endTime),
-                               self.description)
-        for t in self.instanceTags :
-            string += '"%s" '%t
-        string = string[:-1:]
+        string = "%s;%s;%s;%s;%s"% (str(self.startTime), str(self.endTime),
+                                    self.description, self.user, self.project)
         return string
 
     def __le__(self, other) :
