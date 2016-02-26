@@ -27,9 +27,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import sys, time
+import os, sys, time
 import datetime as dt
-from work_sheet import WorkSheet, readFile, filename, workToday
+from work_sheet import WorkSheet, readFile, workToday
 from activity import Activity, TagError
 
 def displayStatistics(w):
@@ -50,7 +50,9 @@ def displayStatistics(w):
             pass
 
 if __name__ == '__main__':
-    w = readFile()
+    filename = os.getenv ('HOME') + "/.activity"
+    partition = filename + "-partition"
+    w = readFile(filename, partition)
     displayStatistics(w)
     print ("")
-    print ("Today: %f" % workToday().totalTime)
+    print ("Today: %f" % workToday(filename, partition).totalTime)
