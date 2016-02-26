@@ -223,7 +223,7 @@ class WorkSheet (object) :
 
 def readFile (filename, partition) :
     """
-    Read $HOME/.activity file and return the correponding work sheet
+    Read files filename and partition and return the correponding work sheet
     """
     Activity.readPartition (partition)
     w = WorkSheet()
