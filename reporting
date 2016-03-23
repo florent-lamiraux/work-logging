@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2010, 2011, 2012, 2013, 2014, 2015 CNRS
+# Author: Florent Lamiraux
+# All rights reserved.
+
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
+# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+import sys, os, time
+import datetime as dt
+from robot_time import WorkSheet, readFile, Activity, TagError
+
+dir = os.getenv ('ROBOT_TIME')
+filename = dir + '/romeo-activity'
+partition = dir + '/romeo-partition'
+string_maintenance = "maintenance"
+
+Month = ("de Janvier", "de février", "de mars", "d'avril", "de mai", "de juin", "de juillet", "d'ao\^ut", "de septembre", "d'octobre", "de novembre", "de décembre")
+header = """\documentclass {article}
+\usepackage[a4paper,margin=1in,landscape]{geometry}
+\usepackage[utf8]{inputenc}
+\\begin {document}
+\\subsubsection* {Récapitulatif de l'utilisation du robot %s pendant le mois %s %s}
+\\begin {center}
+\\begin {tabular}{|l|l|l|l|l|l|}
+\hline
+Début & Fin & Durée & Description & Utilisateur & Projet\\\\
+\hline
+"""
+footer = """\end{tabular}
+\end {center}
+"""
+header2 = """\\subsubsection* {Récapitulatif par projet}
+\\begin {center}
+\\begin {tabular}{|l|l|l|l|l|l|}
+\hline
+Projet & Durée & ratio sur utilisation totale\\\\
+\hline
+"""
+footer2 = """\end{tabular}
+\end {center}
+\end{document}
+"""
+## Write duration as hours and minutes
+def strDuration (d):
+   h = d.days * 24 + d.seconds / 3600
+   m = (d.total_seconds () - h * 3600) / 60
+   return "%i h %i m"%(h,m)
+
+def reporting (month, year, robot):
+   w = readFile (filename, partition)
+   # Create a dictionary with projects as keys
+   repartition = dict ()
+   for p in Activity.partition:
+      repartition [p] = dt.timedelta (0)
+   available = dt.timedelta (0)
+   # Extract activities from last month
+   if not month:
+      month = dt.datetime.today ().month
+      year = dt.datetime.today ().year
+      month = month - 1
+      if month == 0:
+         month = 12; year = year - 1
+   activities = filter (lambda a : a.startTime.month == month and \
+                        a.startTime.year == year, w)
+   # Write header.tex with month and year
+   with open (dir + "/reporting.tex", "w") as f:
+      f.write (header%(robot, Month [month-1], year))
+
+      wm = WorkSheet ()
+      for a in activities: wm.add (a)
+      # Write each activity in main.tex
+      for a in wm:
+         repartition [a.project] += a.duration
+         if a.project != string_maintenance:
+            available += a.duration
+         f.write ("%s & %s & %s & %s & %s & %s\\\\ \n"%(a.startTime, a.endTime,
+                                            strDuration (a.endTime-a.startTime),
+                                            a.description, a.user,
+                                            a.project))
+         f.write ("\hline\n")
+      f.write (footer)
+      f.write (header2)
+      # Write recapitulation in recapitulatif.tex
+      for p, d in repartition.items ():
+         f.write ("%s & %s & %s%s \\\\ \n"%(p,strDuration (d),
+                                            float (100*d.total_seconds())/\
+                                            float (available.total_seconds ()),
+                                            "\%"))
+         f.write ("\hline\n")
+      f.write (footer2)         
+   return wm
+
+if __name__ == '__main__':
+   month = None
+   year = None
+   robot = "Romeo"
+   wm = reporting (month, year, robot)
