@@ -56,14 +56,15 @@ class WorkSheet (object) :
     def __init__ (self) :
         self.activities = []
 
-    def add(self, activity) :
+    def add (self, activity, ignorePartition = False) :
         """
         Add an activity to the time sheet
         """
         if not isinstance(activity, Activity) :
             raise TypeError("expecting an object of type Activity: got %s"%
                             repr(activity))
-        if len (activity.instanceTags.intersection (Activity.partition)) != 1:
+        if not ignorePartition and len (activity.instanceTags.intersection
+                                        (Activity.partition)) != 1:
             raise RuntimeError ("activity should contain one and only one " +
                                 "element of partition.")
         self.activities.append(activity)
@@ -76,7 +77,7 @@ class WorkSheet (object) :
         with open(filename, 'w') as f :
             f.write(str(self))
 
-    def read(self, filename) :
+    def read(self, filename, ignorePartition = False) :
         """
         Read a work sheet in a file
         """
@@ -88,7 +89,7 @@ class WorkSheet (object) :
                 ln += 1
                 try:
                     a = Activity.fromList(row)
-                    self.add(a)
+                    self.add(a, ignorePartition)
                 except Exception as exc:
                     raise IOError("error at line %d: %s"%(ln,str(exc)))
 
@@ -225,9 +226,10 @@ def readFile (filename, partition) :
     """
     Read files filename and partition and return the correponding work sheet
     """
-    Activity.readPartition (partition)
+    if not partition is None:
+        Activity.readPartition (partition)
     w = WorkSheet()
-    w.read(filename)
+    w.read (filename, partition is None)
     return w
 
 def workToday(filename, partition) :
