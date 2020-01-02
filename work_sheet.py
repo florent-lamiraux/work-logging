@@ -82,16 +82,13 @@ class WorkSheet (object) :
         Read a work sheet in a file
         """
         
-        with open(filename, 'rb') as f :
+        with open(filename, 'r') as f :
             reader = csv.reader(f, dialect = CsvDialectSemiColon())
             ln = 0
             for row in reader :
                 ln += 1
-                try:
-                    a = Activity.fromList(row)
-                    self.add(a, ignorePartition)
-                except Exception as exc:
-                    raise IOError("error at line %d: %s"%(ln,str(exc)))
+                a = Activity.fromList(row)
+                self.add(a, ignorePartition)
 
     def sort(self) :
         self.activities.sort()
