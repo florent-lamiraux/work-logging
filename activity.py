@@ -75,7 +75,7 @@ class Activity (object):
         if len(dateAndTime) != 2 :
             raise (IOError("wrong starting date or time."))
         # parse date
-        initList = map(int, dateAndTime[0].split('-'))
+        initList = list(map(int, dateAndTime[0].split('-')))
         if len(initList) != 3 :
             raise (IOError("wrong starting date."))
         #parse time
@@ -127,10 +127,10 @@ class Activity (object):
         Activity.tags.add(tag)
 
     def __str__(self) :
-        string = "%s;%s;%s;"% (str(self.startTime), str(self.endTime),
-                               self.description)
+        string = "{};{};{};".format(str(self.startTime), str(self.endTime),
+                                    self.description)
         for t in self.instanceTags :
-            string += '"%s" '%t
+            string += '"{}" '.format(t)
         string = string[:-1:]
         return string
 

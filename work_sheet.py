@@ -129,10 +129,9 @@ class WorkSheet (object) :
         tagSet = set(tags)
         self.checkTags(tagSet)
         w = WorkSheet()
-        w.activities = filter(lambda x : 
-                              not tagSet.isdisjoint(x.instanceTags) and
-                              not x.endTime is None,
-                              self.activities)
+        for a in self.activities:
+            if not tagSet.isdisjoint(a.instanceTags) and not a.endTime is None:
+                w.activities.append(a)
         return w
 
     def extractInter(self, tags) :
@@ -145,10 +144,9 @@ class WorkSheet (object) :
         self.checkTags(tagSet)
         self.checkTags(tagSet)
         w = WorkSheet()
-        w.activities = filter(lambda x :
-                                  tagSet.issubset(x.instanceTags) and
-                              not x.endTime is None,
-                              self.activities)
+        for a in self.activities:
+            if tagSet.issubset(a.instanceTags) and not a.endTime is None:
+                w.activities.append(a)
         return w
 
 
@@ -157,8 +155,9 @@ class WorkSheet (object) :
         """
         Return total time in hours
         """
-        time = reduce(lambda x,y: x+y.duration, self.activities,
-                        dt.timedelta(0))
+        time = dt.timedelta(0)
+        for a in self.activities:
+            time += a.duration
         return time.days*24 + time.seconds/3600.
 
     def extract(self, predicate) :
@@ -169,7 +168,9 @@ class WorkSheet (object) :
             - a predicate.
         """
         w = WorkSheet()
-        w.activities = filter(predicate, self.activities)
+        for a in self.activities:
+            if predicate(a):
+                w.activities.append(a)
         return w
 
     def extractBetween(self, start, end) :

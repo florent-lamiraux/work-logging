@@ -29,7 +29,7 @@
 
 import os, sys, time
 import datetime as dt
-from work_sheet import WorkSheet, readFile, workToday
+from work_sheet import WorkSheet, readFile, workToday, workThisWeek
 from activity import Activity, TagError
 
 def displayStatistics(w):
@@ -56,3 +56,4 @@ if __name__ == '__main__':
     displayStatistics(w)
     print ("")
     print ("Today: %f" % workToday(filename, partition).totalTime)
+    print ("This week: %f" % workThisWeek(filename, partition).totalTime)

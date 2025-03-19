@@ -45,22 +45,22 @@ if __name__ == '__main__':
         if len(w) > 0:
             print ("Previous activities:")
             for a in w[-3:]:
-                print a
-        print "Starting new activity."
+                print(a)
+        print("Starting new activity.")
         a = Activity()
-        print "Please write description:"
+        print("Please write description:")
         a.description = sys.stdin.readline()[:-1]
         tagInput = True
-        print "Do you want to add a tag ? (y/n) "
+        print("Do you want to add a tag ? (y/n) ")
         while sys.stdin.readline() == 'y\n':
             tag = sys.stdin.readline()[:-1]
             try :
                 a.addTag(tag)
             except TagError as exc:
-                print "This tag is new. Confirm ? (y/n)"
+                print("This tag is new. Confirm ? (y/n)")
                 if sys.stdin.readline() == 'y\n':
                     a.addNewTag(tag)
-            print "Do you want to add a tag ? (y/n) "
+            print("Do you want to add a tag ? (y/n) ")
         w.add(a)
     w.write(filename)
     time.sleep(2.)
